@@ -12,3 +12,4 @@ class MyRideSerializer(serializers.ModelSerializer):
 	class Meta:
 		model 		=	MyRides
 		fields 		=	"__all__"
+		read_only_fields 	=	['ride_id']

@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializer import CustomerProfileSerializer,MyRideSerializer
 from .models import CustomerProfile,MyRides
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -34,7 +35,7 @@ class MyRidesAPIView(generics.ListCreateAPIView):
 
 	def perform_create(self,serializer):
 		customer 	=	self.request.user.customerprofile
-		serializer(customer=customer)
+		serializer.save(customer=customer)
 
 	def get(self,request):
 		request 	=		self.request
@@ -45,5 +46,29 @@ class MyRidesAPIView(generics.ListCreateAPIView):
 		return Response(serialize.data)
 
 
+@login_required(login_url="login")
+def customers(request):
+	query 	=	CustomerProfile.objects.all()
+	return render(request,'customers.html',{'ls':query})
+
+@login_required(login_url="login")
+def ongoing_bookings(request):
+	query 		=		MyRides.objects.filter(ride_status='ongoing')
+	return render(request,'bookings.html',{'ls':query})
+
+@login_required(login_url="login")
+def upcoming_bookings(request):
+	query 		=		MyRides.objects.filter(ride_status='upcoming')
+	return render(request,'bookings.html',{'ls':query})
+
+@login_required(login_url="login")
+def canceled_bookings(request):
+	query 		=		MyRides.objects.filter(ride_status='canceled')
+	return render(request,'bookings.html',{'ls':query})
+
+@login_required(login_url="login")
+def completed_bookings(request):
+	query 		=		MyRides.objects.filter(ride_status='completed')
+	return render(request,'bookings.html',{'ls':query})
 
 
