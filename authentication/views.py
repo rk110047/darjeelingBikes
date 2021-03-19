@@ -24,6 +24,7 @@ class LoginWithTokenAuthenticationAPIView(generics.GenericAPIView):
             # login(user,request)
             #TOKEN STUFF
             token, _ = Token.objects.get_or_create(user = user)
+            login(request,user)
             #token_expire_handler will check, if the token is expired it will generate new one
             # is_expired, token = token_expire_handler(token)     # The implementation will be described further
 

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializer import CustomerProfileSerializer,MyRideSerializer
+from .serializer import CustomerProfileSerializer,MyRideSerializer,MyRideCreateSerializer
 from .models import CustomerProfile,MyRides
 from django.contrib.auth.decorators import login_required
 
@@ -15,19 +15,20 @@ class CustomerProfileCreateAPIView(generics.CreateAPIView):
 
 
 
-class CustomerProfileRetrieve(generics.RetrieveUpdateDestroyAPIView):
+class CustomerProfileRetrieve(generics.GenericAPIView):
 	serializer_class 	=		CustomerProfileSerializer
-	lookup_field 		=		"id"
 	queryset 			=		CustomerProfile.objects.all()
-	# def get_queryset(self):
-	# 	print(self.request.user)
-	# 	query 		=		self.request.user.customerprofile
-	# 	serialize 	=		CustomerProfileSerializer(query)
-	# 	return 	query
+
+	def get(self,request):
+		print(self.request.user)
+		query 		=		self.request.user.customerprofile
+		serialize 	=		CustomerProfileSerializer(query)
+		return 	Response(serialize.data)
 
 
-class MyRidesAPIView(generics.ListCreateAPIView):
-	serializer_class	=	MyRideSerializer
+
+class MyRidesCreateAPIView(generics.CreateAPIView):
+	serializer_class	=	MyRideCreateSerializer
 	queryset 			=	MyRides.objects.all()
 
 	def post(self,request,*args,**kwargs):
@@ -36,6 +37,12 @@ class MyRidesAPIView(generics.ListCreateAPIView):
 	def perform_create(self,serializer):
 		customer 	=	self.request.user.customerprofile
 		serializer.save(customer=customer)
+
+
+
+class MyRidesAPIView(generics.ListAPIView):
+	serializer_class	=	MyRideSerializer
+	queryset 			=	MyRides.objects.all()
 
 	def get(self,request):
 		request 	=		self.request
